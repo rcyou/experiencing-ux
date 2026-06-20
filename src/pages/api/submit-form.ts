@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-export const prereder = false; // Ensures this endpoint runs on-demand (SSR)
+export const prerender = false; // Ensures this endpoint runs on-demand (SSR)
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -31,11 +31,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
         fields: {
           'First Name': firstName,
           'Last Name': lastName,
-          'Email': email,
-          'LinkedIn': linkedin,
+          'Email Address': email,
+          'LinkedIn URL': linkedin,
         },
       }),
-    });
+    });s
 
     if (!response.ok) {
       const errLog = await response.text();
