@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           'LinkedIn URL': linkedin,
         },
       }),
-    });s
+    });
 
     if (!response.ok) {
       const errLog = await response.text();
