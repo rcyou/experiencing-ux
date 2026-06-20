@@ -1,0 +1,136 @@
+---
+---
+
+<section
+	class="max-w-xl rounded-md border border-white bg-surface-form p-6 backdrop-blur-form-card"
+	aria-labelledby="signup-heading"
+>
+	<h2 id="signup-heading" class="text-xl md:text-3xl leading-tight font-semibold text-blue-600">
+		Stay in the know
+	</h2>
+	<p class="mt-4 text-base leading-normal text-slate-700">
+		Curious about what's happening? Add yourself to our mailing list for updates on upcoming
+		events &amp; group announcements.
+	</p>
+
+	<form id="signup-form" action="/api/submit-form" method="POST" class="mt-4 flex flex-col gap-4" novalidate>
+		<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
+				<label for="first-name" class="text-sm leading-relaxed font-semibold text-grey-800">
+					First Name
+				</label>
+				<input
+					id="first-name"
+					name="firstName"
+					type="text"
+					autocomplete="given-name"
+					required
+					placeholder="Your First Name"
+					class="input-field"
+				/>
+			</div>
+			<div class="flex flex-col gap-2">
+				<label for="last-name" class="text-sm leading-relaxed font-semibold text-slate-900">
+					Last Name
+				</label>
+				<input
+					id="last-name"
+					name="lastName"
+					type="text"
+					autocomplete="family-name"
+					required
+					placeholder="Your Last Name"
+					class="input-field"
+				/>
+			</div>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<label for="email" class="text-sm leading-relaxed font-semibold text-slate-900">
+				Email Address
+			</label>
+			<input
+				id="email"
+				name="email"
+				type="email"
+				autocomplete="email"
+				required
+				placeholder="Email Address"
+				class="input-field"
+			/>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<label for="linkedin" class="text-sm leading-relaxed font-semibold text-slate-900">
+				LinkedIn URL
+			</label>
+			<input
+				id="linkedin"
+				name="linkedin"
+				type="url"
+				inputmode="url"
+				placeholder="Your LinkedIn Profile"
+				class="input-field"
+			/>
+			<p class="text-xs leading-none text-slate-500">
+				Example: https://linkedin.com/in/your-profile-url
+			</p>
+		</div>
+
+		<p
+			id="form-status"
+			class="hidden text-sm leading-relaxed"
+			role="status"
+			aria-live="polite"
+		></p>
+
+		<button type="submit" class="btn-primary self-start" id="submit-btn">
+			<span id="submit-label">Join Us</span>
+			<span id="submit-spinner" class="ml-2 hidden size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
+		</button>
+	</form>
+</section>
+
+<script>
+	const form = document.getElementById("signup-form") as HTMLFormElement;
+	const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+	const submitLabel = document.getElementById("submit-label") as HTMLSpanElement;
+	const submitSpinner = document.getElementById("submit-spinner") as HTMLSpanElement;
+	const formStatus = document.getElementById("form-status") as HTMLParagraphElement;
+
+	function setLoading(loading: boolean) {
+		submitBtn.disabled = loading;
+		submitBtn.dataset.loading = loading ? "true" : "false";
+		submitSpinner.classList.toggle("hidden", !loading);
+		submitLabel.textContent = loading ? "Joining…" : "Join Us";
+	}
+
+	function showStatus(message: string, type: "success" | "error") {
+		formStatus.textContent = message;
+		formStatus.classList.remove("hidden", "text-green-700", "text-red-600");
+		formStatus.classList.add(type === "success" ? "text-green-700" : "text-red-600");
+	}
+
+	form?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		formStatus.classList.add("hidden");
+
+		if (!form.checkValidity()) {
+			form.reportValidity();
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			// Placeholder until a mailing-list endpoint is connected.
+			await new Promise((resolve) => setTimeout(resolve, 800));
+			showStatus("Thanks for joining! We'll be in touch soon.", "success");
+			form.reset();
+		} catch {
+			showStatus("Something went wrong. Please try again.", "error");
+		} finally {
+			setLoading(false);
+		}
+	});
+</script>

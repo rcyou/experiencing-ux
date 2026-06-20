@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Zalando Sans", ui-sans-serif, system-ui, sans-serif;
+
+	--color-primary-hover: #1a56db;
+	--color-primary-active: #1648b8;
+	--color-border-input: #b7bbc2;
+}
+
+@layer base {
+	html {
+		font-family: var(--font-sans);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	body {
+		margin: 0;
+	}
+}
+
+@layer components {
+	.input-field {
+		@apply h-10 w-full rounded-md border border-border-input bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition-[border-color,box-shadow] placeholder:text-slate-300;
+		@apply ring-2 ring-inset ring-transparent;
+		@apply hover:border-slate-500;
+		@apply focus:outline-blue-600;
+		@apply disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60;
+	}
+
+	.input-field:user-invalid:not(:placeholder-shown) {
+		@apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+	}
+
+	.btn-primary {
+		@apply inline-flex items-center justify-center rounded-md border border-blue-600 bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm outline-none transition-all;
+		@apply hover:bg-primary-hover hover:shadow;
+		@apply active:scale-[0.98] active:bg-primary-active;
+		@apply focus-visible:ring-2 focus-visible:outline-blue-600 focus-visible:ring-offset-2;
+		@apply disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100;
+	}
+
+	.btn-primary[data-loading="true"] {
+		@apply pointer-events-none opacity-80;
+	}
+}
