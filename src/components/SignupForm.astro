@@ -1,8 +1,9 @@
 ---
+const successMessage = "Your info has been submitted. We'll be in touch soon!";
 ---
 
 <section
-	class="max-w-xl rounded-md border border-white bg-surface-form p-6 backdrop-blur-form-card"
+	class="max-w-xl rounded-md bg-white/40 border border-slate-200 backdrop-blur-md p-6"
 	aria-labelledby="signup-heading"
 >
 	<h2 id="signup-heading" class="text-xl md:text-3xl leading-tight font-semibold text-blue-600">
@@ -13,10 +14,10 @@
 		events &amp; group announcements.
 	</p>
 
-	<form id="signup-form" action="/api/submit-form" method="POST" class="mt-4 flex flex-col gap-4" novalidate>
+	<form id="signup-form" class="mt-4 flex flex-col gap-4" novalidate>
 		<div class="grid grid-cols-2 gap-4">
 			<div class="flex flex-col gap-2">
-				<label for="first-name" class="text-sm leading-relaxed font-semibold text-grey-800">
+				<label for="first-name" class="input-label">
 					First Name
 				</label>
 				<input
@@ -30,7 +31,7 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<label for="last-name" class="text-sm leading-relaxed font-semibold text-slate-900">
+				<label for="last-name" class="input-label">
 					Last Name
 				</label>
 				<input
@@ -46,7 +47,7 @@
 		</div>
 
 		<div class="flex flex-col gap-2">
-			<label for="email" class="text-sm leading-relaxed font-semibold text-slate-900">
+			<label for="email" class="input-label">
 				Email Address
 			</label>
 			<input
@@ -61,7 +62,7 @@
 		</div>
 
 		<div class="flex flex-col gap-2">
-			<label for="linkedin" class="text-sm leading-relaxed font-semibold text-slate-900">
+			<label for="linkedin" class="input-label">
 				LinkedIn URL
 			</label>
 			<input
@@ -69,51 +70,91 @@
 				name="linkedin"
 				type="url"
 				inputmode="url"
+				required
 				placeholder="Your LinkedIn Profile"
 				class="input-field"
 			/>
-			<p class="text-xs leading-none text-slate-500">
+			<p class="input-helper">
 				Example: https://linkedin.com/in/your-profile-url
 			</p>
 		</div>
 
-		<p
-			id="form-status"
-			class="hidden text-sm leading-relaxed"
-			role="status"
-			aria-live="polite"
-		></p>
-
 		<button type="submit" class="btn-primary self-start" id="submit-btn">
 			<span id="submit-label">Join Us</span>
-			<span id="submit-spinner" class="ml-2 hidden size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
+			<span
+				id="submit-spinner"
+				class="ml-2 hidden size-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+				aria-hidden="true"
+			></span>
 		</button>
 	</form>
+
+	<div
+		id="form-alert"
+		class="form-alert hidden"
+		role="status"
+		aria-live="polite"
+		hidden
+	>
+		<p id="form-alert-message" class="flex-1 text-base leading-none"></p>
+		<button
+			type="button"
+			id="form-alert-dismiss"
+			class="form-alert-dismiss"
+			aria-label="Dismiss message"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+				<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+			</svg>
+		</button>
+	</div>
 </section>
 
-<script>
-	const form = document.getElementById("signup-form") as HTMLFormElement;
-	const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
-	const submitLabel = document.getElementById("submit-label") as HTMLSpanElement;
-	const submitSpinner = document.getElementById("submit-spinner") as HTMLSpanElement;
-	const formStatus = document.getElementById("form-status") as HTMLParagraphElement;
+<script define:vars={{ successMessage }}>
+	const STORAGE_KEY = "signup-success-message";
 
-	function setLoading(loading: boolean) {
+	const form = document.getElementById("signup-form");
+	const submitBtn = document.getElementById("submit-btn");
+	const submitLabel = document.getElementById("submit-label");
+	const submitSpinner = document.getElementById("submit-spinner");
+	const formAlert = document.getElementById("form-alert");
+	const formAlertMessage = document.getElementById("form-alert-message");
+	const dismissBtn = document.getElementById("form-alert-dismiss");
+
+	function setLoading(loading) {
 		submitBtn.disabled = loading;
 		submitBtn.dataset.loading = loading ? "true" : "false";
 		submitSpinner.classList.toggle("hidden", !loading);
 		submitLabel.textContent = loading ? "Joining…" : "Join Us";
 	}
 
-	function showStatus(message: string, type: "success" | "error") {
-		formStatus.textContent = message;
-		formStatus.classList.remove("hidden", "text-green-700", "text-red-600");
-		formStatus.classList.add(type === "success" ? "text-green-700" : "text-red-600");
+	function showAlert(message, type) {
+		formAlertMessage.textContent = message;
+		formAlert.classList.remove("hidden", "form-alert--success", "form-alert--error");
+		formAlert.classList.add(type === "success" ? "form-alert--success" : "form-alert--error");
+		formAlert.hidden = false;
+
+		if (type === "success") {
+			sessionStorage.setItem(STORAGE_KEY, message);
+		}
 	}
+
+	function hideAlert() {
+		formAlert.classList.add("hidden");
+		formAlert.hidden = true;
+		sessionStorage.removeItem(STORAGE_KEY);
+	}
+
+	const savedMessage = sessionStorage.getItem(STORAGE_KEY);
+	if (savedMessage) {
+		showAlert(savedMessage, "success");
+	}
+
+	dismissBtn?.addEventListener("click", hideAlert);
 
 	form?.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		formStatus.classList.add("hidden");
+		hideAlert();
 
 		if (!form.checkValidity()) {
 			form.reportValidity();
@@ -123,12 +164,22 @@
 		setLoading(true);
 
 		try {
-			// Placeholder until a mailing-list endpoint is connected.
-			await new Promise((resolve) => setTimeout(resolve, 800));
-			showStatus("Thanks for joining! We'll be in touch soon.", "success");
+			const response = await fetch("/api/submit-form", {
+				method: "POST",
+				body: new FormData(form),
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				showAlert(data.error ?? "Something went wrong. Please try again.", "error");
+				return;
+			}
+
 			form.reset();
+			showAlert(data.message ?? successMessage, "success");
 		} catch {
-			showStatus("Something went wrong. Please try again.", "error");
+			showAlert("Something went wrong. Please try again.", "error");
 		} finally {
 			setLoading(false);
 		}

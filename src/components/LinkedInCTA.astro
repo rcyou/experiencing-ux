@@ -3,32 +3,13 @@ interface Props {
 	href?: string;
 }
 
-const { href = "https://www.linkedin.com/groups/" } = Astro.props;
+const { href = "https://www.linkedin.com/groups/8410176/" } = Astro.props;
 ---
 
-<a
-	href={href}
-	class="max-w-xl flex items-center gap-4 rounded-md py-1 no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-	target="_blank"
-	rel="noopener noreferrer"
->
-	<img
-		src="/images/linkedin.svg"
-		alt=""
-		width="24"
-		height="24"
-		class="size-6 shrink-0"
-		aria-hidden="true"
-	/>
+<a href={href} class="linkedin-cta" target="_blank" rel="noopener noreferrer" >
+	<img src="/images/linkedin.svg" alt="" width="24" height="24" class="size-6 shrink-0" aria-hidden="true"/>
 	<p class="flex-1 text-base">
-		<span class="font-semibold">Email not your thing?</span> We also have a private group you can follow on LinkedIn.
+		<span class="font-semibold">Email not your thing? </span>Request to join our private LinkedIn group.
 	</p>
-	<img
-		src="/images/arrow.svg"
-		alt=""
-		width="24"
-		height="24"
-		class="size-6 shrink-0 transition-transform group-hover:translate-x-0.5"
-		aria-hidden="true"
-	/>
+	<img src="/images/arrow.svg" alt="" width="24" height="24" class="size-6 shrink-0" aria-hidden="true"/>
 </a>
