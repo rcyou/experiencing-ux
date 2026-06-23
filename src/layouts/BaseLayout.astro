@@ -5,8 +5,8 @@ interface Props {
 }
 
 const {
-	title = "Experiencing UX — Des Moines UX Community",
-	description = "Experiencing UX is a network for user experience professionals in Central Iowa who want to connect, share insights, and grow their careers.",
+	title = "Experiencing UX — Des Moines UX & Product Community",
+	description = "Experiencing UX is the grassroots community for user experience (UX) professionals in Central Iowa to connect with others and grow.",
 } = Astro.props;
 ---
 
@@ -16,9 +16,15 @@ const {
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		
+		<meta property="og:type" content="website">
+		<meta property="og:title" content={title}>
+		<meta property="og:description" content={description}>
+		<meta property="og:image" content="images/og-image.jpg">
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
