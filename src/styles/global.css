@@ -43,6 +43,70 @@
 }
 
 @layer components {
+	.logo-flex-item {
+		@apply basis-[calc(50%-0.25rem)] sm:basis-[calc(25%-0.375rem)];
+
+		&:first-child {
+			.logo-link {
+				@apply rounded-tl-2xl;
+			}
+		}
+
+		&:nth-child(2) {
+			.logo-link {
+				@apply rounded-tr-2xl;
+			}
+		}
+		&:nth-child(3) {
+			.logo-link {
+				@apply rounded-bl-2xl;
+			}
+		}
+
+		&:last-child {
+			.logo-link {
+				@apply rounded-br-2xl;
+			}
+		}
+
+		@media (min-width: 40rem) {
+			&:first-child {
+				.logo-link {
+					@apply rounded-l-2xl;
+				}
+			}
+
+			&:last-child {
+				.logo-link {
+					@apply rounded-r-2xl;
+				}
+			}
+
+			&:nth-child(2) {
+				.logo-link {
+					@apply rounded-none;
+				}
+			}
+			&:nth-child(3) {
+				.logo-link {
+					@apply rounded-none;
+				}
+			}
+		}
+	}
+
+	.logo-link {
+		@apply flex items-center justify-center flex-col transition duration-200 ease-in-out h-full px-[1rem] py-[1rem] bg-slate-200/50;
+
+		&:hover, &:focus {
+			@apply bg-slate-50 scale-108;
+		}
+
+		img {
+			margin: auto;
+		}
+	}
+
 	.input-label {
 		@apply text-sm leading-relaxed font-semibold text-gray-800;
 	}
@@ -71,7 +135,7 @@
 	}
 
 	.btn-primary {
-		@apply inline-flex items-center justify-center rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm transition-colors;
+		@apply inline-flex items-center justify-center rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm transition duration-200 ease-in-out;
 
 		&:hover, &:focus {
 			@apply border-blue-900 bg-blue-800 shadow;
@@ -106,7 +170,7 @@
 	}
 
 	.linkedin-cta {
-		@apply max-w-2xl flex items-center gap-4 rounded-md p-4 no-underline transition-colors ease-in-out border border-transparent bg-transparent;
+		@apply max-w-2xl flex items-center gap-4 rounded-md p-4 no-underline transition duration-200 ease-in-out border border-transparent bg-transparent;
 
 		&:hover, &:focus {
 			@apply bg-white/50 border-gray-200; 
