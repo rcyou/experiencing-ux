@@ -169,6 +169,14 @@
 		}
 	}
 
+	.member-card {
+		@apply flex flex-col items-start gap-1 rounded-md border border-slate-200 bg-white/40 p-4 text-left backdrop-blur-md;
+	}
+
+	.member-card-logo {
+		@apply ml-auto h-8 w-auto max-w-24 shrink-0;
+	}
+
 	.linkedin-cta {
 		@apply max-w-2xl flex items-center gap-4 rounded-md p-4 no-underline transition duration-200 ease-in-out border border-transparent bg-transparent;
 
