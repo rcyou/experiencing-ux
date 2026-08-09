@@ -1,0 +1,27 @@
+---
+const companyLogos = [
+	{ file: "deere.svg", name: "John Deere" },
+	{ file: "workiva.svg", name: "Workiva" },
+	{ file: "principal.svg", name: "Principal Financial Group" },
+	{ file: "wellmark.svg", name: "Wellmark Blue Cross and Blue Shield" },
+	{ file: "corteva.svg", name: "Corteva" },
+	{ file: "isu.svg", name: "Iowa State University" },
+	{ file: "shopify.svg", name: "Shopify" },
+	{ file: "accenture.svg", name: "Accenture" },
+	{ file: "drake.svg", name: "Drake University" },
+];
+---
+
+<section class="w-full text-center py-10" aria-labelledby="featured-companies-heading">
+	<h2 id="featured-companies-heading" class="block mb-5 text-2xl md:text-4xl leading-tight font-semibold">
+		Orgs represented by our <span class="text-blue-600">community</span>
+	</h2>
+
+	<ul class="grid w-full grid-cols-2 gap-4 md:grid-cols-3">
+		{companyLogos.map((company) => (
+			<li class="flex items-center justify-center px-4 py-8">
+				<img src={`/images/company-logo-cloud/${company.file}`} alt={company.name} class="max-h-16 w-auto max-w-44" />
+			</li>
+		))}
+	</ul>
+</section>

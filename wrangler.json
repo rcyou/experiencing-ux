@@ -5,5 +5,11 @@
     "compatibility_flags": ["nodejs_compat"],
     "assets": {
       "directory": "./dist/client"
+    },
+    "vars": {
+      "AIRTABLE_BASE_ID": "appPWSMVYlq2UVw5P",
+      "AIRTABLE_TABLE_NAME": "tblpLeuTgBtjPhofQ",
+      "AIRTABLE_MEMBERSHIP_TABLE_ID": "tbluJm0oaTWQtP6wN",
+      "AIRTABLE_COMPANIES_TABLE_ID": "tblLuuDqwVW5gLYkE"
     }
   }
