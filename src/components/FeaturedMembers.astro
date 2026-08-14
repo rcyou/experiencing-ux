@@ -9,6 +9,18 @@ interface FeaturedMember {
 	companyLogo?: string;
 }
 
+// Dev-only: astro dev re-runs this frontmatter on every full-page reload,
+// which re-fetches Airtable every time (e.g. on every save while tweaking
+// styles). Cache on globalThis (survives Vite reloading this module when
+// this file itself changes) for the life of the dev server process, so
+// reloads reuse the last result instead of hitting Airtable again. Restart
+// `npm run dev` to pick up schema changes (new/renamed columns). Has no
+// effect on the prerendered production build, which only runs this once
+// at build time.
+declare global {
+	var __featuredMembersDevCache: FeaturedMember[] | undefined;
+}
+
 async function fetchCompanyLogos(
 	baseId: string,
 	token: string,
@@ -38,6 +50,10 @@ async function fetchCompanyLogos(
 }
 
 async function getFeaturedMembers(): Promise<FeaturedMember[]> {
+	if (import.meta.env.DEV && globalThis.__featuredMembersDevCache) {
+		return globalThis.__featuredMembersDevCache;
+	}
+
 	const {
 		AIRTABLE_ACCESS_TOKEN,
 		AIRTABLE_BASE_ID,
@@ -80,7 +96,7 @@ async function getFeaturedMembers(): Promise<FeaturedMember[]> {
 			}[];
 		};
 
-		return records
+		const members = records
 			.filter((record) => record.fields["Full Name"] && record.fields.Photo?.[0]?.url)
 			.map((record) => {
 				const companyId = record.fields.Company?.[0];
@@ -92,6 +108,12 @@ async function getFeaturedMembers(): Promise<FeaturedMember[]> {
 					companyLogo: companyId ? companyLogos.get(companyId) : undefined,
 				};
 			});
+
+		if (import.meta.env.DEV) {
+			globalThis.__featuredMembersDevCache = members;
+		}
+
+		return members;
 	} catch (error) {
 		console.error("Featured members fetch error:", error);
 		return [];
