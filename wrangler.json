@@ -11,5 +11,8 @@
       "AIRTABLE_TABLE_NAME": "tblpLeuTgBtjPhofQ",
       "AIRTABLE_MEMBERSHIP_TABLE_ID": "tbluJm0oaTWQtP6wN",
       "AIRTABLE_COMPANIES_TABLE_ID": "tblLuuDqwVW5gLYkE"
+    },
+    "secrets": {
+      "required": ["AIRTABLE_ACCESS_TOKEN"]
     }
   }
