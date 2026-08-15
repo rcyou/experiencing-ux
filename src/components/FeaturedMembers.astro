@@ -1,4 +1,5 @@
 ---
+import { Buffer } from "node:buffer";
 import { env } from "cloudflare:workers";
 
 interface FeaturedMember {
@@ -7,6 +8,12 @@ interface FeaturedMember {
 	company: string;
 	photo: string;
 	companyLogo?: string;
+}
+
+interface AirtableAttachment {
+	url: string;
+	type?: string;
+	thumbnails?: { large?: { url: string } };
 }
 
 // Dev-only: astro dev re-runs this frontmatter on every full-page reload,
@@ -19,6 +26,43 @@ interface FeaturedMember {
 // at build time.
 declare global {
 	var __featuredMembersDevCache: FeaturedMember[] | undefined;
+}
+
+// Airtable attachment URLs are signed and expire a few hours after being
+// issued. Since this page is prerendered once at build time (see README),
+// baking those URLs straight into the HTML would mean images break shortly
+// after every deploy. Instead, fetch each image at build time and inline it
+// as a base64 data URI, so the live site never depends on an Airtable URL
+// staying valid. (Prerendering runs inside the Cloudflare adapter's workerd
+// sandbox, which has no real filesystem, so downloading to a static file
+// isn't an option here — a data URI needs only fetch(), which the sandbox
+// already supports.) Uses Airtable's "large" thumbnail rather than the
+// original upload to keep raster images small — plenty for a 48px
+// avatar/logo. SVGs are the exception: Airtable's thumbnails rasterize them
+// to PNG, so we skip the thumbnail and fetch the original to keep them
+// vector.
+// Dev keeps using live Airtable URLs directly — sessions are short enough
+// that expiry isn't a concern, and it avoids re-fetching on every reload.
+async function toDataUri(attachment: AirtableAttachment): Promise<string> {
+	const isVector = attachment.type === "image/svg+xml";
+	const sourceUrl = isVector ? attachment.url : (attachment.thumbnails?.large?.url ?? attachment.url);
+
+	try {
+		const response = await fetch(sourceUrl);
+		if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+		const buffer = Buffer.from(await response.arrayBuffer());
+		// Trust the fetched response's own Content-Type, not attachment.type: Airtable
+		// rasterizes thumbnails (e.g. an SVG's "large" thumbnail comes back as a PNG),
+		// so attachment.type (the *original* file's mime type) can disagree with the
+		// bytes we actually fetched, producing an invalid data URI (e.g. PNG bytes
+		// mislabeled image/svg+xml, which browsers refuse to render).
+		const mimeType = response.headers.get("content-type") ?? attachment.type ?? "image/jpeg";
+		return `data:${mimeType};base64,${buffer.toString("base64")}`;
+	} catch (error) {
+		console.error(`Failed to inline image ${sourceUrl}, falling back to Airtable URL:`, error);
+		return attachment.url;
+	}
 }
 
 async function fetchCompanyLogos(
@@ -39,14 +83,20 @@ async function fetchCompanyLogos(
 	}
 
 	const { records } = (await response.json()) as {
-		records: { id: string; fields: { Logo?: { url: string }[] } }[];
+		records: { id: string; fields: { Logo?: AirtableAttachment[] } }[];
 	};
 
-	return new Map(
-		records
-			.filter((record) => record.fields.Logo?.[0]?.url)
-			.map((record) => [record.id, record.fields.Logo![0].url]),
+	const withLogos = records.filter((record) => record.fields.Logo?.[0]);
+
+	const entries = await Promise.all(
+		withLogos.map(async (record) => {
+			const attachment = record.fields.Logo![0];
+			const src = import.meta.env.PROD ? await toDataUri(attachment) : attachment.url;
+			return [record.id, src] as const;
+		}),
 	);
+
+	return new Map(entries);
 }
 
 async function getFeaturedMembers(): Promise<FeaturedMember[]> {
@@ -91,23 +141,30 @@ async function getFeaturedMembers(): Promise<FeaturedMember[]> {
 					Title?: string;
 					"Name (from Company)"?: string[];
 					Company?: string[];
-					Photo?: { url: string }[];
+					Photo?: AirtableAttachment[];
 				};
 			}[];
 		};
 
-		const members = records
-			.filter((record) => record.fields["Full Name"] && record.fields.Photo?.[0]?.url)
-			.map((record) => {
-				const companyId = record.fields.Company?.[0];
-				return {
-					name: record.fields["Full Name"]!,
-					title: record.fields.Title ?? "",
-					company: record.fields["Name (from Company)"]?.[0] ?? "",
-					photo: record.fields.Photo![0].url,
-					companyLogo: companyId ? companyLogos.get(companyId) : undefined,
-				};
-			});
+		const members = await Promise.all(
+			records
+				.filter((record) => record.fields["Full Name"] && record.fields.Photo?.[0])
+				.map(async (record) => {
+					const companyId = record.fields.Company?.[0];
+					const photoAttachment = record.fields.Photo![0];
+					const photo = import.meta.env.PROD
+						? await toDataUri(photoAttachment)
+						: photoAttachment.url;
+
+					return {
+						name: record.fields["Full Name"]!,
+						title: record.fields.Title ?? "",
+						company: record.fields["Name (from Company)"]?.[0] ?? "",
+						photo,
+						companyLogo: companyId ? companyLogos.get(companyId) : undefined,
+					};
+				}),
+		);
 
 		if (import.meta.env.DEV) {
 			globalThis.__featuredMembersDevCache = members;
