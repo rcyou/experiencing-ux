@@ -177,6 +177,22 @@
 		@apply ml-auto h-8 w-auto max-w-24 shrink-0;
 	}
 
+	.nav-link {
+		@apply inline-flex items-center gap-1 text-[0.875rem] font-bold uppercase tracking-[0.08em] text-blue-700 no-underline transition duration-200 ease-in-out;
+
+		&:hover, &:focus {
+			@apply text-blue-900;
+		}
+	}
+
+	.nav-link-text {
+		@apply underline decoration-1 decoration-dotted decoration-transparent underline-offset-4 transition-colors duration-200 ease-in-out;
+
+		.nav-link:hover & {
+			@apply decoration-current;
+		}
+	}
+
 	.linkedin-cta {
 		@apply max-w-2xl flex items-center gap-4 rounded-md p-4 no-underline transition duration-200 ease-in-out border border-transparent bg-transparent;
 

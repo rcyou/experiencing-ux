@@ -1,0 +1,31 @@
+---
+import Logo from "./Logo.astro";
+
+const links = [
+	{ href: "https://newsletter.experiencingux.org/", label: "Our Newsletter" },
+	{ href: "https://www.linkedin.com/groups/8410176/", label: "LinkedIn" },
+];
+---
+
+<header class="w-full border-b border-slate-200/60">
+	<div class="max-w-4xl mx-auto flex items-center justify-between gap-3 px-4 py-3">
+		<a href="/" aria-label="Experiencing UX home" class="shrink-0 rounded-sm">
+			<Logo class="h-7 w-auto sm:h-8" decorative />
+		</a>
+
+		<nav aria-label="Primary">
+			<ul class="flex items-center gap-4 sm:gap-6">
+				{links.map((link) => (
+					<li>
+						<a href={link.href} target="_blank" rel="noopener noreferrer" class="nav-link group">
+							<span class="nav-link-text">{link.label}</span>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="size-3 shrink-0 -rotate-45 transition duration-200 ease-in-out group-hover:rotate-0 group-focus:rotate-0" aria-hidden="true">
+								<path d="M13.5 19.5L21 12L13.5 4.5M21 12H3" />
+							</svg>
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	</div>
+</header>
