@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Experiencing UX//How I AI//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:how-i-ai-2026-11-11@experiencingux.org
+DTSTAMP:20261027T150000Z
+DTSTART:20261111T180000Z
+DTEND:20261111T190000Z
+SUMMARY:How I AI: Experiencing UX Show and Tell
+DESCRIPTION:Three practitioners show how they use AI at work. 10 minutes each\, with Q&A after every demo. Virtual only. Recorded and posted to our YouTube channel.\nJoin: https://meet.google.com/wah-xfrm-wfg
+LOCATION:https://meet.google.com/wah-xfrm-wfg
+URL:https://meet.google.com/wah-xfrm-wfg
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
